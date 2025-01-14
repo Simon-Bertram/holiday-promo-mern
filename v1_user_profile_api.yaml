@@ -1,0 +1,168 @@
+openapi: 3.0.3
+info:
+  title: User Profile API
+  version: v1
+  description: API for user profile management
+
+paths:
+  /api/users:
+    post:
+      summary: Register a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserRegistration"
+      responses:
+        "201":
+          description: User registered successfully
+        "400":
+          description: Bad Request (e.g., missing fields, invalid data)
+        "500":
+          description: Internal Server Error
+
+  /api/users/auth:
+    post:
+      summary: Authenticate user and get JWT token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserLogin"
+      responses:
+        "200":
+          description: User authenticated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                    description: JWT access token
+        "401":
+          description: Unauthorized (invalid credentials)
+
+  /api/users/logout:
+    post:
+      summary: Logout user and clear session
+      responses:
+        "200":
+          description: User logged out successfully
+
+  /api/users/profile:
+    get:
+      summary: Get current user profile
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: User profile retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserProfile"
+        "401":
+          description: Unauthorized
+
+    put:
+      summary: Update current user profile
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserProfileUpdate"
+      responses:
+        "200":
+          description: User profile updated successfully
+        "400":
+          description: Bad Request (e.g., invalid data)
+        "401":
+          description: Unauthorized
+
+    delete:
+      summary: Delete current user profile
+      security:
+        - BearerAuth: []
+      responses:
+        "204":
+          description: User profile deleted successfully
+        "401":
+          description: Unauthorized
+
+  /api/admin/users:
+    get:
+      summary: Get a list of all users
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: List of users retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/UserProfile"
+        "401":
+          description: Unauthorized
+
+components:
+  schemas:
+    UserRegistration:
+      type: object
+      properties:
+        name:
+          type: string
+          required: true
+        email:
+          type: string
+          format: email
+          required: true
+        password:
+          type: string
+          required: true
+
+    UserLogin:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          required: true
+        password:
+          type: string
+          required: true
+
+    UserProfile:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        email:
+          type: string
+          format: email
+      required:
+        - name
+        - email
+
+    UserProfileUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+      required: []
+
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
