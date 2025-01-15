@@ -1,6 +1,7 @@
 import express from "express";
 import dotenv from "dotenv";
 dotenv.config();
+import helmet from "helmet";
 import { notFound, errorHandler } from "./middleware/errorMiddleware.js";
 import connectDB from "./config/db.js";
 
@@ -11,6 +12,7 @@ connectDB();
 
 const app = express();
 
+app.use(helmet());
 app.use("/api/users", userRoutes);
 
 app.get("/", (req, res) => {
