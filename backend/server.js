@@ -1,6 +1,7 @@
 import express from "express";
 import dotenv from "dotenv";
 dotenv.config();
+import cookieParser from "cookie-parser";
 import helmet from "helmet";
 import cors from "cors";
 import { notFound, errorHandler } from "./middleware/errorMiddleware.js";
@@ -17,6 +18,7 @@ app.use(express.json()); // Parse JSON bodies
 app.use(express.urlencoded({ extended: true })); // Parse URL-encoded bodies
 app.use(helmet()); // Secure HTTP headers
 app.use(cors()); // Enable CORS
+app.use(cookieParser()); // Parse cookies
 app.use("/api/users", userRoutes);
 
 app.get("/", (req, res) => {

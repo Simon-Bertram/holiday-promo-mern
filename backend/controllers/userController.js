@@ -1,6 +1,7 @@
 import asyncHandler from "express-async-handler";
 import User from "../models/userModel.js";
 import generateToken from "../utils/generateToken.js";
+import { protect } from "../middleware/authMiddleware.js";
 
 // @desc: Auth user/set token
 // route: POST /api/users/auth
@@ -65,18 +66,35 @@ const logoutUser = asyncHandler((req, res) => {
 // route: GET /api/users/profile
 // access: Private
 const getUserProfile = asyncHandler((req, res) => {
-  res.status(200).json({
-    message: "User profile",
-  });
+  const user = {
+    _id: req.user._id,
+    name: req.user.name,
+    email: req.user.email,
+  };
+  res.status(200).json(user);
 });
 
 // @desc: Update user profile
 // route: PUT /api/users/profile
 // access: Private
-const updateUserProfile = asyncHandler((req, res) => {
-  res.status(200).json({
-    message: "Update User profile",
-  });
+const updateUserProfile = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.user._id);
+  if (user) {
+    user.name = req.body.name || user.name;
+    user.email = req.body.email || user.email;
+    if (req.body.password) {
+      user.password = req.body.password;
+    }
+    const updatedUser = await user.save();
+    res.status(200).json({
+      _id: updatedUser._id,
+      name: updatedUser.name,
+      email: updatedUser.email,
+    });
+  } else {
+    res.status(404);
+    throw new Error("User not found");
+  }
 });
 
 export {
