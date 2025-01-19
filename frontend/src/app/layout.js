@@ -27,7 +27,9 @@ export default function RootLayout({ children }) {
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <div className="min-h-screen bg-white dark:bg-gray-900">
             <Header />
-            {children}
+            <main id="main-content" tabIndex="-1">
+              {children}
+            </main>
           </div>
         </ThemeProvider>
       </body>
