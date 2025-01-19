@@ -13,10 +13,10 @@ connectDB();
 
 const app = express();
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(helmet());
-app.use(cors());
+app.use(express.json()); // Parse JSON bodies
+app.use(express.urlencoded({ extended: true })); // Parse URL-encoded bodies
+app.use(helmet()); // Secure HTTP headers
+app.use(cors()); // Enable CORS
 app.use("/api/users", userRoutes);
 
 app.get("/", (req, res) => {
