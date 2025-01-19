@@ -22,7 +22,7 @@ app.use(cookieParser()); // Parse cookies
 app.use("/api/users", userRoutes);
 
 app.get("/", (req, res) => {
-  res.send("Hello World");
+  res.send("API is running");
 });
 
 app.use(notFound);
