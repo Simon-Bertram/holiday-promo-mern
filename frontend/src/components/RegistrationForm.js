@@ -73,8 +73,8 @@ export function RegistrationForm() {
         throw new Error(data.message || "Registration failed");
       }
 
-      // Registration successful, redirect to login or dashboard
-      router.push("/login");
+      // Redirect to success page instead of login
+      router.push("/registration-success");
     } catch (error) {
       console.error("Registration error:", error);
       // Here you might want to add some error handling UI feedback

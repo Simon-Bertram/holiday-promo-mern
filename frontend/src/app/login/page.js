@@ -44,12 +44,25 @@ export default function Login() {
   async function onSubmit(values) {
     setIsLoading(true);
     try {
-      // Add your authentication logic here
-      console.log(values);
-      // On success, redirect to dashboard or home
-      // router.push("/dashboard");
+      const res = await fetch("/api/users/auth", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(values),
+        credentials: "include", //
+      });
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.message || "Login failed");
+      }
+      // On success, redirect to dashboard
+      router.push("/profile");
     } catch (error) {
-      console.error(error);
+      console.error("Login error:", error);
+      // You might want to add error handling UI here
+      // For example, using a toast notification
     } finally {
       setIsLoading(false);
     }
@@ -122,7 +135,7 @@ export default function Login() {
             <Button
               variant="link"
               className="p-0"
-              onClick={() => router.push("/register")}
+              onClick={() => router.push("/")}
             >
               Sign up
             </Button>
