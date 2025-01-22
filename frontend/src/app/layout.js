@@ -1,3 +1,5 @@
+import { Provider } from "react-redux";
+import store from "./store";
 import { Geist, Geist_Mono } from "next/font/google";
 import { ThemeProvider } from "next-themes";
 import Header from "../components/Header";
@@ -24,14 +26,16 @@ export default function RootLayout({ children }) {
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          <div className="min-h-screen bg-white dark:bg-gray-900">
-            <Header />
-            <main id="main-content" tabIndex="-1">
-              {children}
-            </main>
-          </div>
-        </ThemeProvider>
+        <Provider store={store}>
+          <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+            <div className="min-h-screen bg-white dark:bg-gray-900">
+              <Header />
+              <main id="main-content" tabIndex="-1">
+                {children}
+              </main>
+            </div>
+          </ThemeProvider>
+        </Provider>
       </body>
     </html>
   );
