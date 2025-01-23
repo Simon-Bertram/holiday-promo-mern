@@ -8,7 +8,6 @@ import { useRouter, usePathname } from "next/navigation";
 export default function Header() {
   const router = useRouter();
   const pathname = usePathname();
-  const [isLoggedIn, setIsLoggedIn] = useState(false); // Add state for user authentication
 
   const handleLogout = () => {
     fetch("/api/users/logout", {
