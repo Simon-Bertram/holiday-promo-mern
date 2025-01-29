@@ -1,7 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useDispatch, useSelector } from "react-redux";
+import { useLoginMutation } from "@/slices/usersApiSlice";
+import { setCredentials } from "@/slices/authSlice";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
@@ -31,7 +34,18 @@ const formSchema = z.object({
 
 export default function Login() {
   const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
+
+  const dispatch = useDispatch();
+
+  const [login, { isLoading }] = useLoginMutation();
+
+  const { userInfo } = useSelector((state) => state.auth);
+
+  useEffect(() => {
+    if (userInfo) {
+      router.push("/profile");
+    }
+  }, [userInfo, router]);
 
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -57,7 +71,7 @@ export default function Login() {
       if (!res.ok) {
         throw new Error(data.message || "Login failed");
       }
-      // On success, redirect to dashboard
+      // On success, redirect to user profile
       router.push("/profile");
     } catch (error) {
       console.error("Login error:", error);
