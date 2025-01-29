@@ -15,6 +15,7 @@ const getUserInfo = () => {
 };
 
 const initialState = {
+  isLoading: false,
   userInfo: getUserInfo(),
 };
 
@@ -28,6 +29,9 @@ const authSlice = createSlice({
         localStorage.setItem("userInfo", JSON.stringify(action.payload));
       }
     },
+    setLoading: (state, action) => {
+      state.isLoading = action.payload;
+    },
     logout: (state, action) => {
       state.userInfo = null;
       if (typeof window !== "undefined") {
@@ -37,6 +41,6 @@ const authSlice = createSlice({
   },
 });
 
-export const { setCredentials, logout } = authSlice.actions;
+export const { setCredentials, setLoading, logout } = authSlice.actions;
 
 export default authSlice.reducer;

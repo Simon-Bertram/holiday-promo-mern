@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
 import { useLoginMutation } from "@/slices/usersApiSlice";
-import { setCredentials } from "@/slices/authSlice";
+import { setCredentials, setLoading } from "@/slices/authSlice";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
@@ -56,29 +56,15 @@ export default function Login() {
   });
 
   async function onSubmit(values) {
-    setIsLoading(true);
     try {
-      const res = await fetch("/api/users/auth", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(values),
-        credentials: "include", //
-      });
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data.message || "Login failed");
-      }
+      const res = await login(values).unwrap();
+      dispatch(setCredentials({ ...res }));
       // On success, redirect to user profile
       router.push("/profile");
     } catch (error) {
-      console.error("Login error:", error);
+      console.error("Login error:", error?.data?.message || error.error);
       // You might want to add error handling UI here
       // For example, using a toast notification
-    } finally {
-      setIsLoading(false);
     }
   }
 
