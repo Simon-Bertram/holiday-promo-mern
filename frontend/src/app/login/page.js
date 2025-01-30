@@ -35,7 +35,7 @@ const formSchema = z.object({
 export default function Login() {
   const router = useRouter();
   const dispatch = useDispatch();
-  const [login, { isLoading }] = useLoginMutation();
+  const [login, { isLoading, error: loginError }] = useLoginMutation();
   const { userInfo } = useSelector((state) => state.auth);
 
   useEffect(() => {
@@ -57,16 +57,18 @@ export default function Login() {
       const res = await login(values).unwrap();
       dispatch(setCredentials({ ...res }));
       // On success, redirect to user profile
-      if (res.response.ok) {
-        router.push("/profile");
-        console.log("Login successful");
-      } else {
-        console.error("Login error:", res.response.message);
-      }
-    } catch (error) {
-      console.error("Login error:", error?.data?.message || error.error);
-      // You might want to add error handling UI here
-      // For example, using a toast notification
+      router.push("/profile");
+    } catch (err) {
+      // Handle different types of errors
+      const message =
+        err.data?.message || // API error message
+        err.error || // RTK Query error
+        "Invalid email or password"; // Fallback message
+
+      form.setError("root", {
+        type: "manual",
+        message: message,
+      });
     }
   }
 
@@ -118,6 +120,11 @@ export default function Login() {
                   </FormItem>
                 )}
               />
+              {form.formState.errors.root && (
+                <div className="text-red-500 text-sm mt-2">
+                  {form.formState.errors.root.message}
+                </div>
+              )}
               <Button type="submit" className="w-full" disabled={isLoading}>
                 {isLoading ? "Logging in..." : "Login"}
               </Button>

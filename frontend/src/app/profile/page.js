@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, notFound } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
@@ -52,36 +52,24 @@ function UserProfileForm() {
   });
 
   async function onSubmit(values) {
-    setIsLoading(true);
     try {
-      const response = await fetch("/api/users", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name: values.name,
-          email: values.email,
-          password: values.password,
-        }),
-      });
+      const res = await login(values).unwrap();
+      dispatch(setCredentials({ ...res }));
+      router.push("/profile");
+    } catch (err) {
+      // Handle different types of errors
+      const message =
+        err.data?.message || // API error message
+        err.error || // RTK Query error
+        "An error occurred during login";
 
-      const data = await response.json();
+      console.error("Login error:", message);
 
-      if (!response.ok) {
-        throw new Error(data.message || "Profile update failed");
-      }
-
-      // display success message
-      alert("Profile updated successfully");
-    } catch (error) {
-      console.error("Profile update error:", error);
-      // Here you might want to add some error handling UI feedback
+      // Set form error
       form.setError("root", {
-        message: error.message || "Something went wrong during registration",
+        type: "manual",
+        message: message,
       });
-    } finally {
-      setIsLoading(false);
     }
   }
 
@@ -89,7 +77,7 @@ function UserProfileForm() {
     <div className="flex min-h-screen items-center justify-center px-4">
       <Card className="w-full max-w-md p-12">
         <CardHeader>
-          <h2>Register</h2>
+          <h2>Welcome to your profile</h2>
         </CardHeader>
         <CardContent>
           <Form {...form}>
@@ -144,7 +132,7 @@ function UserProfileForm() {
                     <FormLabel>Password</FormLabel>
                     <FormControl>
                       <Input
-                        placeholder="Set your password"
+                        placeholder="Set a new password"
                         type="password"
                         autoComplete="new-password"
                         {...field}
@@ -174,8 +162,14 @@ function UserProfileForm() {
                 )}
               />
 
+              {form.formState.errors.root && (
+                <div className="text-red-500 text-sm mt-2">
+                  {form.formState.errors.root.message}
+                </div>
+              )}
+
               <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? "Registering..." : "Register"}
+                {isLoading ? "Updating..." : "Update"}
               </Button>
             </form>
           </Form>

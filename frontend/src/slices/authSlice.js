@@ -1,27 +1,12 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-// Helper function to safely get initial user info
-const getUserInfo = () => {
-  if (typeof window === "undefined") return null;
-
-  const userInfo = localStorage.getItem("userInfo");
-  if (!userInfo) return null;
-
-  try {
-    return JSON.parse(userInfo);
-  } catch {
-    return null;
-  }
-};
-
-const initialState = {
-  isLoading: false,
-  userInfo: getUserInfo(),
-};
-
+// This slice manages authentication state
 const authSlice = createSlice({
   name: "auth",
-  initialState,
+  initialState: {
+    userInfo: null,
+    isLoading: false,
+  },
   reducers: {
     setCredentials: (state, action) => {
       state.userInfo = action.payload;
@@ -29,18 +14,17 @@ const authSlice = createSlice({
         localStorage.setItem("userInfo", JSON.stringify(action.payload));
       }
     },
-    setLoading: (state, action) => {
-      state.isLoading = action.payload;
-    },
-    logout: (state, action) => {
+    logout: (state) => {
       state.userInfo = null;
       if (typeof window !== "undefined") {
         localStorage.removeItem("userInfo");
       }
     },
+    setLoading: (state, action) => {
+      state.isLoading = action.payload;
+    },
   },
 });
 
-export const { setCredentials, setLoading, logout } = authSlice.actions;
-
+export const { setCredentials, logout, setLoading } = authSlice.actions;
 export default authSlice.reducer;
