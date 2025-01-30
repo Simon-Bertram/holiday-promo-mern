@@ -57,7 +57,12 @@ export default function Login() {
       const res = await login(values).unwrap();
       dispatch(setCredentials({ ...res }));
       // On success, redirect to user profile
-      router.push("/profile");
+      if (res.response.ok) {
+        router.push("/profile");
+        console.log("Login successful");
+      } else {
+        console.error("Login error:", res.response.message);
+      }
     } catch (error) {
       console.error("Login error:", error?.data?.message || error.error);
       // You might want to add error handling UI here
