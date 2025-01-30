@@ -34,11 +34,8 @@ const formSchema = z.object({
 
 export default function Login() {
   const router = useRouter();
-
   const dispatch = useDispatch();
-
   const [login, { isLoading }] = useLoginMutation();
-
   const { userInfo } = useSelector((state) => state.auth);
 
   useEffect(() => {
