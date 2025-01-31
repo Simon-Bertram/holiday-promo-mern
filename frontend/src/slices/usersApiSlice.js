@@ -18,6 +18,19 @@ export const usersApiSlice = apiSlice.injectEndpoints({
       },
     }),
 
+    // Register mutation
+    register: builder.mutation({
+      query: (data) => ({
+        url: `${USERS_URL}`,
+        method: "POST",
+        body: data,
+      }),
+      // Handle errors properly
+      transformErrorResponse: (response) => {
+        return response.data ?? { message: "An error occurred" };
+      },
+    }),
+
     // Get user profile query
     getUserProfile: builder.query({
       query: () => ({
@@ -42,6 +55,7 @@ export const usersApiSlice = apiSlice.injectEndpoints({
 // Export hooks for use in components
 export const {
   useLoginMutation,
+  useRegisterMutation,
   useGetUserProfileQuery,
   useUpdateProfileMutation,
 } = usersApiSlice;
