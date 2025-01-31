@@ -4,6 +4,7 @@ import NavLinks from "./NavLinks";
 import Link from "next/link";
 import ThemeSwitch from "./ThemeSwitch";
 import { useRouter, usePathname } from "next/navigation";
+import { useSelector, useDispatch } from "react-redux";
 
 export default function Header() {
   const router = useRouter();

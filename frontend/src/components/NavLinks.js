@@ -2,6 +2,9 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useSelector, useDispatch } from "react-redux";
+import UserMenu from "./UserMenu";
+import { logout } from "@/slices/authSlice";
 import { clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 
@@ -12,12 +15,17 @@ const cn = (...inputs) => {
 
 export default function NavLinks() {
   const pathname = usePathname();
-
+  const dispatch = useDispatch();
+  const { userInfo } = useSelector((state) => state.auth);
   const navLinks = [
     { href: "/", label: "Home" },
     { href: "/deals", label: "Deals" },
     { href: "/about", label: "About" },
   ];
+
+  function handleLogout() {
+    dispatch(logout());
+  }
 
   return (
     <nav aria-label="Main navigation">
@@ -38,13 +46,17 @@ export default function NavLinks() {
           </li>
         ))}
         <li role="none">
-          <Link
-            href="/login"
-            className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors focus:ring-2 focus:ring-blue-400 focus:outline-none"
-            role="menuitem"
-          >
-            Login
-          </Link>
+          {userInfo ? (
+            <UserMenu userInfo={userInfo} onLogout={handleLogout} />
+          ) : (
+            <Link
+              href="/login"
+              className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors focus:ring-2 focus:ring-blue-400 focus:outline-none"
+              role="menuitem"
+            >
+              Login
+            </Link>
+          )}
         </li>
       </ul>
     </nav>
