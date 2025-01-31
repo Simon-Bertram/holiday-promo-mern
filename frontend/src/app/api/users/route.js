@@ -11,6 +11,7 @@ export async function POST(request) {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(body),
+      credentials: "include",
     });
 
     const data = await response.json();
@@ -22,8 +23,16 @@ export async function POST(request) {
       );
     }
 
-    return NextResponse.json(data);
+    const headers = new Headers();
+    response.headers.forEach((value, key) => {
+      if (key.toLowerCase() === "set-cookie") {
+        headers.append(key, value);
+      }
+    });
+
+    return NextResponse.json(data, { headers });
   } catch (error) {
+    console.error("Registration error:", error);
     return NextResponse.json(
       { message: "Internal server error" },
       { status: 500 }
