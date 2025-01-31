@@ -2,6 +2,7 @@ import StoreProvider from "./StoreProvider";
 import { Geist, Geist_Mono } from "next/font/google";
 import { ThemeProvider } from "next-themes";
 import Header from "../components/Header";
+import { Toaster } from "@/components/ui/toaster";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -32,6 +33,7 @@ export default function RootLayout({ children }) {
               <main id="main-content" tabIndex="-1">
                 {children}
               </main>
+              <Toaster />
             </div>
           </ThemeProvider>
         </StoreProvider>

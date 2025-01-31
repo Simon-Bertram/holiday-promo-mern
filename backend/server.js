@@ -7,6 +7,8 @@ import cors from "cors";
 import { notFound, errorHandler } from "./middleware/errorMiddleware.js";
 import connectDB from "./config/db.js";
 
+const COOKIE_SECRET = process.env.COOKIE_SECRET || "your-fallback-secret-key";
+
 const PORT = process.env.PORT || 5000;
 import userRoutes from "./routes/userRoutes.js";
 
@@ -18,7 +20,7 @@ app.use(express.json()); // Parse JSON bodies
 app.use(express.urlencoded({ extended: true })); // Parse URL-encoded bodies
 app.use(helmet()); // Secure HTTP headers
 app.use(cors()); // Enable CORS
-app.use(cookieParser()); // Parse cookies
+app.use(cookieParser(COOKIE_SECRET)); // Parse cookies
 app.use("/api/users", userRoutes);
 
 app.get("/", (req, res) => {

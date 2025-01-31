@@ -1,7 +1,10 @@
 "use client";
 
-import { useState } from "react";
 import { useRouter, notFound } from "next/navigation";
+import {
+  useGetProfileQuery,
+  useUpdateProfileMutation,
+} from "@/slices/usersApiSlice";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
@@ -38,8 +41,9 @@ const formSchema = z
   });
 
 function UserProfileForm() {
+  const { data: profile, isLoading } = useGetProfileQuery();
+  const [updateProfile] = useUpdateProfileMutation();
   const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
 
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -51,11 +55,10 @@ function UserProfileForm() {
     },
   });
 
-  async function onSubmit(values) {
+  async function handleUpdateProfile(newData) {
     try {
-      const res = await login(values).unwrap();
-      dispatch(setCredentials({ ...res }));
-      router.push("/profile");
+      await updateProfile(newData).unwrap();
+      toast.success("Profile updated successfully");
     } catch (err) {
       // Handle different types of errors
       const message =

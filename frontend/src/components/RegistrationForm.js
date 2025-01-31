@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
+import { useToast } from "@/hooks/use-toast";
 
 // Define form validation schema
 const formSchema = z
@@ -77,7 +78,12 @@ export function RegistrationForm() {
       router.push("/registration-success");
     } catch (error) {
       console.error("Registration error:", error);
-      // Here you might want to add some error handling UI feedback
+      toast({
+        variant: "destructive",
+        title: "Registration failed",
+        description:
+          error.message || "Something went wrong during registration",
+      });
       form.setError("root", {
         message: error.message || "Something went wrong during registration",
       });
