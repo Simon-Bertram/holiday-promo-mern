@@ -18,6 +18,13 @@ export const usersApiSlice = apiSlice.injectEndpoints({
       },
     }),
 
+    logout: builder.mutation({
+      query: () => ({
+        url: `${USERS_URL}/logout`,
+        method: "POST",
+      }),
+    }),
+
     // Register mutation
     register: builder.mutation({
       query: (data) => ({
@@ -32,12 +39,14 @@ export const usersApiSlice = apiSlice.injectEndpoints({
     }),
 
     // Get user profile query
-    getUserProfile: builder.query({
+    getProfile: builder.query({
       query: () => ({
         url: `${USERS_URL}/profile`,
         method: "GET",
       }),
-      providesTags: ["User"], // Mark which cache tags this provides
+      providesTags: (result, error, arg) => [
+        { type: "Profile", id: result?.id ?? "PROFILE" },
+      ],
     }),
 
     // Update profile mutation
@@ -47,7 +56,10 @@ export const usersApiSlice = apiSlice.injectEndpoints({
         method: "PUT",
         body: data,
       }),
-      invalidatesTags: ["User"], // Invalidate cache when profile is updated
+      // Invalidate the specific profile that was updated
+      invalidatesTags: (result, error, arg) => [
+        { type: "Profile", id: arg.id ?? "PROFILE" },
+      ],
     }),
   }),
 });
@@ -55,7 +67,8 @@ export const usersApiSlice = apiSlice.injectEndpoints({
 // Export hooks for use in components
 export const {
   useLoginMutation,
+  useLogoutMutation,
   useRegisterMutation,
-  useGetUserProfileQuery,
+  useGetProfileQuery,
   useUpdateProfileMutation,
 } = usersApiSlice;
