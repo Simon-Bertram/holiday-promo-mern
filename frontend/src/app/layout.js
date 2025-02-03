@@ -30,7 +30,7 @@ export default function RootLayout({ children }) {
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
             <div className="min-h-screen bg-white dark:bg-gray-900">
               <Header />
-              <main id="main-content" tabIndex="-1">
+              <main id="main-content" tabIndex="-1" className="px-4">
                 {children}
               </main>
               <Toaster />
