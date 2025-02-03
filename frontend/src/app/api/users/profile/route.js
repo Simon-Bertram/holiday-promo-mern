@@ -3,12 +3,18 @@ import { NextResponse } from "next/server";
 // GET user profile
 export async function GET(request) {
   const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+
+  // Get the cookie from the incoming request
+  const cookie = request.headers.get("cookie");
+
   try {
     const response = await fetch(`${API_URL}/api/users/profile`, {
       method: "GET",
       credentials: "include", // Important for sending cookies
       headers: {
         "Content-Type": "application/json",
+        // Forward the cookie if it exists
+        ...(cookie ? { Cookie: cookie } : {}),
       },
     });
 
