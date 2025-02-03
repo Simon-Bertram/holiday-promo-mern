@@ -19,7 +19,14 @@ const app = express();
 app.use(express.json()); // Parse JSON bodies
 app.use(express.urlencoded({ extended: true })); // Parse URL-encoded bodies
 app.use(helmet()); // Secure HTTP headers
-app.use(cors()); // Enable CORS
+app.use(
+  cors({
+    origin: process.env.FRONTEND_URL || "http://localhost:3000",
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+); // Enable CORS
 app.use(cookieParser(COOKIE_SECRET)); // Parse cookies
 app.use("/api/users", userRoutes);
 
