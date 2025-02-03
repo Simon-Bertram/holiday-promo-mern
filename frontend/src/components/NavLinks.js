@@ -4,7 +4,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useSelector, useDispatch } from "react-redux";
 import UserMenu from "./UserMenu";
-import { logout } from "@/slices/authSlice";
 import { clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 
@@ -22,10 +21,6 @@ export default function NavLinks() {
     { href: "/deals", label: "Deals" },
     { href: "/about", label: "About" },
   ];
-
-  function handleLogout() {
-    dispatch(logout());
-  }
 
   return (
     <nav aria-label="Main navigation">
@@ -47,7 +42,7 @@ export default function NavLinks() {
         ))}
         <li role="none">
           {userInfo ? (
-            <UserMenu userInfo={userInfo} onLogout={handleLogout} />
+            <UserMenu userInfo={userInfo} />
           ) : (
             <Link
               href="/login"

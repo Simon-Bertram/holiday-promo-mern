@@ -85,7 +85,7 @@ function UserProfileForm() {
         <CardContent>
           <Form {...form}>
             <form
-              onSubmit={form.handleSubmit(onSubmit)}
+              onSubmit={form.handleSubmit(handleUpdateProfile)}
               className="space-y-6 w-full max-w-md"
               noValidate
             >
