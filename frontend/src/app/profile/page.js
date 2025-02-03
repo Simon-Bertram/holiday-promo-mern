@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect } from "react";
+import { useSelector } from "react-redux";
 import { useRouter, notFound } from "next/navigation";
 import {
   useGetProfileQuery,
@@ -44,6 +46,13 @@ function UserProfileForm() {
   const { data: profile, isLoading } = useGetProfileQuery();
   const [updateProfile] = useUpdateProfileMutation();
   const router = useRouter();
+  const { userInfo } = useSelector((state) => state.auth);
+
+  useEffect(() => {
+    if (!userInfo) {
+      router.push("/login");
+    }
+  }, [userInfo, router]);
 
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -54,6 +63,17 @@ function UserProfileForm() {
       passwordConfirmation: "",
     },
   });
+
+  useEffect(() => {
+    if (profile) {
+      form.reset({
+        name: profile.name || "",
+        email: profile.email || "",
+        password: "",
+        passwordConfirmation: "",
+      });
+    }
+  }, [profile, form]);
 
   async function handleUpdateProfile(newData) {
     try {

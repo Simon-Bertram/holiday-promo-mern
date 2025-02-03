@@ -43,6 +43,9 @@ export const usersApiSlice = apiSlice.injectEndpoints({
       query: () => ({
         url: `${USERS_URL}/profile`,
         method: "GET",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
       }),
       providesTags: (result, error, arg) => [
         { type: "Profile", id: result?.id ?? "PROFILE" },

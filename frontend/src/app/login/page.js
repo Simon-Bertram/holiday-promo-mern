@@ -8,6 +8,7 @@ import { setCredentials, setLoading } from "@/slices/authSlice";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
+import { getCookie } from "@/app/utils/cookie";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -55,7 +56,7 @@ export default function Login() {
   async function onSubmit(values) {
     try {
       const res = await login(values).unwrap();
-      dispatch(setCredentials({ ...res }));
+      dispatch(setCredentials({ ...res, token: getCookie("jwt") }));
       // On success, redirect to user profile
       router.push("/profile");
     } catch (err) {
