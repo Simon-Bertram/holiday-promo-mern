@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { useSelector } from "react-redux";
-import { useRouter, notFound } from "next/navigation";
+import { useRouter } from "next/navigation";
 import {
   useGetProfileQuery,
   useUpdateProfileMutation,
@@ -45,14 +45,6 @@ const formSchema = z
 function UserProfileForm() {
   const { data: profile, isLoading } = useGetProfileQuery();
   const [updateProfile] = useUpdateProfileMutation();
-  const router = useRouter();
-  const { userInfo } = useSelector((state) => state.auth);
-
-  useEffect(() => {
-    if (!userInfo) {
-      router.push("/login");
-    }
-  }, [userInfo, router]);
 
   const form = useForm({
     resolver: zodResolver(formSchema),
