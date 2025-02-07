@@ -1,21 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 import UserMenu from "./UserMenu";
-import { clsx } from "clsx";
-import { twMerge } from "tailwind-merge";
 
-// Utility function to combine classes
-const cn = (...inputs) => {
-  return twMerge(clsx(inputs));
-};
-
-export default function NavLinks() {
-  const pathname = usePathname();
-  const dispatch = useDispatch();
+export default function NavLinks({ currentPath }) {
   const { userInfo } = useSelector((state) => state.auth);
+
   const navLinks = [
     { href: "/", label: "Home" },
     { href: "/deals", label: "Deals" },
@@ -29,12 +20,11 @@ export default function NavLinks() {
           <li key={href} role="none">
             <Link
               href={href}
-              className={cn(
-                "transition-colors hover:text-gray-600 dark:hover:text-gray-300",
-                pathname === href && "text-blue-500 dark:text-blue-400"
-              )}
+              className={`transition-colors hover:text-gray-600 dark:hover:text-gray-300 ${
+                currentPath === href ? "text-blue-500 dark:text-blue-400" : ""
+              }`}
               role="menuitem"
-              aria-current={pathname === href ? "page" : undefined}
+              aria-current={currentPath === href ? "page" : undefined}
             >
               {label}
             </Link>

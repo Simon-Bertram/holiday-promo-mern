@@ -1,6 +1,6 @@
 import StoreProvider from "./StoreProvider";
 import { Geist, Geist_Mono } from "next/font/google";
-import { ThemeProvider } from "next-themes";
+import ClientThemeProvider from "@/components/ClientThemeProvider";
 import Header from "../components/Header";
 import { Toaster } from "@/components/ui/toaster";
 import "./globals.css";
@@ -22,20 +22,20 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen bg-white dark:bg-gray-900`}
       >
         <StoreProvider>
-          <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-            <div className="min-h-screen bg-white dark:bg-gray-900">
+          <ClientThemeProvider>
+            <div className="flex flex-col min-h-screen">
               <Header />
-              <main id="main-content" tabIndex="-1" className="px-4">
+              <main id="main-content" className="flex-grow px-4">
                 {children}
               </main>
               <Toaster />
             </div>
-          </ThemeProvider>
+          </ClientThemeProvider>
         </StoreProvider>
       </body>
     </html>
