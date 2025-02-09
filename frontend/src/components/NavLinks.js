@@ -1,11 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { useGetProfileQuery } from "@/slices/usersApiSlice";
+import { useAuthProfile } from "@/hooks/useAuthProfile";
+import { useSelector } from "react-redux";
 import UserMenu from "./UserMenu";
 
 export default function NavLinks({ currentPath }) {
-  const { data: profile } = useGetProfileQuery();
+  const { data: profile } = useAuthProfile();
+  const { userInfo } = useSelector((state) => state.auth);
 
   const navLinks = [
     { href: "/", label: "Home" },
@@ -31,7 +33,7 @@ export default function NavLinks({ currentPath }) {
           </li>
         ))}
         <li role="none">
-          {profile ? (
+          {userInfo ? (
             <UserMenu />
           ) : (
             <Link

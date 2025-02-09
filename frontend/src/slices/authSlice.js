@@ -21,6 +21,8 @@ const authSlice = createSlice({
         localStorage.removeItem("userInfo");
         localStorage.removeItem("token");
       }
+      // Reset API state when logging out
+      apiSlice.util.resetApiState();
     },
     setLoading: (state, action) => {
       state.isLoading = action.payload;

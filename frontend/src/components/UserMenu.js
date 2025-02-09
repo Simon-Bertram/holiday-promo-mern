@@ -15,7 +15,14 @@ import {
 import { LogOut, User } from "lucide-react";
 
 export default function UserMenu() {
-  const { data: profile, isLoading } = useGetProfileQuery();
+  const {
+    data: profile,
+    isLoading,
+    error,
+  } = useGetProfileQuery(undefined, {
+    // Skip caching to always fetch fresh data
+    refetchOnMountOrArgChange: true,
+  });
   const dispatch = useDispatch();
   const [logoutMutation] = useLogoutMutation();
   const router = useRouter();
@@ -32,6 +39,10 @@ export default function UserMenu() {
 
   if (isLoading) {
     return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return null;
   }
 
   // Use profile.name to display the initial (if available)
