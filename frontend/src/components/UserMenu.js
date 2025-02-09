@@ -6,6 +6,7 @@ import { useLogoutMutation } from "@/slices/usersApiSlice";
 import { logout } from "@/slices/authSlice";
 import { useDispatch } from "react-redux";
 import { useGetProfileQuery } from "@/slices/usersApiSlice";
+import { apiSlice } from "@/slices/apiSlice";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -30,7 +31,10 @@ export default function UserMenu() {
   const logoutHandler = async () => {
     try {
       await logoutMutation().unwrap();
+      // First dispatch logout to clear auth state
       dispatch(logout());
+      // Then manually invalidate the profile query
+      dispatch(apiSlice.util.resetApiState());
       router.push("/");
     } catch (error) {
       console.error("Logout failed", error);

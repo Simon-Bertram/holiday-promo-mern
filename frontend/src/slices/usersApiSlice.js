@@ -45,9 +45,9 @@ export const usersApiSlice = apiSlice.injectEndpoints({
         method: "GET",
         credentials: "include",
       }),
-      providesTags: (result, error, arg) => [
-        { type: "Profile", id: result?.id ?? "PROFILE" },
-      ],
+      providesTags: ["Profile"],
+      // Add cache invalidation on logout
+      keepUnusedDataFor: 0,
     }),
 
     // Update profile mutation
