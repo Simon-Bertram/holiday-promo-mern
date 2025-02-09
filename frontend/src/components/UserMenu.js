@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useLogoutMutation } from "@/slices/usersApiSlice";
 import { logout } from "@/slices/authSlice";
 import { useDispatch } from "react-redux";
+import { useGetProfileQuery } from "@/slices/usersApiSlice";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,10 +14,12 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { LogOut, User } from "lucide-react";
 
-export default function UserMenu({ userInfo, onLogout }) {
+export default function UserMenu() {
+  const { data: profile, isLoading } = useGetProfileQuery();
   const dispatch = useDispatch();
   const [logoutMutation] = useLogoutMutation();
   const router = useRouter();
+
   const logoutHandler = async () => {
     try {
       await logoutMutation().unwrap();
@@ -27,10 +30,17 @@ export default function UserMenu({ userInfo, onLogout }) {
     }
   };
 
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  // Use profile.name to display the initial (if available)
+  const initialLetter = profile?.name ? profile.name.slice(0, 1) : "U";
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger className="px-4 py-2 bg-blue-500 text-white rounded-full hover:bg-blue-600 transition-colors focus:ring-2 focus:ring-blue-400 focus:outline-none">
-        {userInfo.name.slice(0, 1)}
+        {initialLetter}
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuItem asChild>

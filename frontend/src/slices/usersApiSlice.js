@@ -55,6 +55,7 @@ export const usersApiSlice = apiSlice.injectEndpoints({
       query: (data) => ({
         url: `${USERS_URL}/profile`,
         method: "PUT",
+        credentials: "include",
         body: data,
       }),
       // Invalidate the specific profile that was updated

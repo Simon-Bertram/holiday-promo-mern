@@ -1,6 +1,8 @@
 import asyncHandler from "express-async-handler";
 import User from "../models/userModel.js";
 import generateToken from "../utils/generateToken.js";
+import jwt from "jsonwebtoken";
+import { parse } from "cookie";
 
 // @desc: Auth user/set token
 // route: POST /api/users/auth

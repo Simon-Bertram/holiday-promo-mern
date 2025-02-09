@@ -1,8 +1,6 @@
 "use client";
 
 import { useEffect } from "react";
-import { useSelector } from "react-redux";
-import { useRouter } from "next/navigation";
 import {
   useGetProfileQuery,
   useUpdateProfileMutation,
@@ -131,6 +129,7 @@ function UserProfileForm() {
                         placeholder="Enter your email"
                         type="email"
                         autoComplete="email"
+                        disabled
                         {...field}
                       />
                     </FormControl>
