@@ -6,11 +6,12 @@ import helmet from "helmet";
 import cors from "cors";
 import { notFound, errorHandler } from "./middleware/errorMiddleware.js";
 import connectDB from "./config/db.js";
+import userRoutes from "./routes/userRoutes.js";
+import authRoutes from "./routes/authRoutes.js";
 
 const COOKIE_SECRET = process.env.COOKIE_SECRET || "your-fallback-secret-key";
 
 const PORT = process.env.PORT || 5000;
-import userRoutes from "./routes/userRoutes.js";
 
 connectDB();
 
@@ -29,6 +30,7 @@ app.use(
 ); // Enable CORS
 app.use(cookieParser(COOKIE_SECRET)); // Parse cookies
 app.use("/api/users", userRoutes);
+app.use("/api/auth", authRoutes);
 
 app.get("/", (req, res) => {
   res.send("API is running");
