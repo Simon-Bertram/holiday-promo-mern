@@ -18,6 +18,9 @@ const userSchema = new mongoose.Schema(
       ref: "User",
     },
     roleModifiedAt: Date,
+    // Fields for magic code login flow
+    loginCode: { type: String },
+    loginCodeExpiry: { type: Date },
   },
   {
     timestamps: true,
