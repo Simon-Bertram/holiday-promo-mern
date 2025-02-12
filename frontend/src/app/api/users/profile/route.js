@@ -1,3 +1,5 @@
+"use server";
+
 import { NextResponse } from "next/server";
 
 // GET user profile
@@ -40,6 +42,9 @@ export async function GET(request) {
 // PUT update user profile
 export async function PUT(request) {
   const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+  // Get the cookie from the incoming request
+  const cookie = request.headers.get("cookie");
+
   try {
     const body = await request.json();
 
@@ -48,6 +53,8 @@ export async function PUT(request) {
       credentials: "include",
       headers: {
         "Content-Type": "application/json",
+        // Forward the cookie if it exists
+        ...(cookie ? { Cookie: cookie } : {}),
       },
       body: JSON.stringify(body),
     });

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import {
   useGetProfileQuery,
   useUpdateProfileMutation,
@@ -21,36 +21,26 @@ import {
 import { Input } from "@/components/ui/input";
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
 
-// Define form validation schema
-const formSchema = z
-  .object({
-    name: z.string().min(2, "Name must be at least 2 characters"),
-    email: z.string().email("Invalid email address"),
-    password: z
-      .string()
-      .min(8, "Password must be at least 8 characters")
-      .regex(
-        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
-        "Password must contain at least one uppercase letter, one lowercase letter, and one number"
-      ),
-    passwordConfirmation: z.string(),
-  })
-  .refine((data) => data.password === data.passwordConfirmation, {
-    message: "Passwords don't match",
-    path: ["passwordConfirmation"],
-  });
+// Define form validation schema with preprocessing for empty strings
+const formSchema = z.object({
+  name: z.string().min(2, "Name must be at least 2 characters"),
+  email: z.string().email("Invalid email address"),
+});
 
 function UserProfileForm() {
-  const { data: profile, isLoading } = useGetProfileQuery();
-  const [updateProfile] = useUpdateProfileMutation();
+  const { data: profile, isLoading: isProfileLoading } = useGetProfileQuery();
+  // Use RTK Query mutation state to determine if the update was successful
+  const [updateProfile, { isLoading, isSuccess, isError, error: updateError }] =
+    useUpdateProfileMutation();
+
+  // Optional local state if you want to control message presentation further
+  const [localSuccessMsg, setLocalSuccessMsg] = useState("");
 
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: "",
       email: "",
-      password: "",
-      passwordConfirmation: "",
     },
   });
 
@@ -59,26 +49,30 @@ function UserProfileForm() {
       form.reset({
         name: profile.name || "",
         email: profile.email || "",
-        password: "",
-        passwordConfirmation: "",
       });
     }
   }, [profile, form]);
 
+  // React to successful update via the RTK Query status flag
+  useEffect(() => {
+    if (isSuccess) {
+      setLocalSuccessMsg("Profile updated successfully");
+    } else {
+      setLocalSuccessMsg("");
+    }
+  }, [isSuccess]);
+
   async function handleUpdateProfile(newData) {
     try {
-      await updateProfile(newData).unwrap();
-      toast.success("Profile updated successfully");
+      const updateData = {
+        name: newData.name,
+        email: newData.email,
+      };
+
+      await updateProfile(updateData).unwrap();
     } catch (err) {
-      // Handle different types of errors
       const message =
-        err.data?.message || // API error message
-        err.error || // RTK Query error
-        "An error occurred during login";
-
-      console.error("Login error:", message);
-
-      // Set form error
+        err.data?.message || err.error || "An error occurred during update";
       form.setError("root", {
         type: "manual",
         message: message,
@@ -90,7 +84,7 @@ function UserProfileForm() {
     <div className="flex min-h-screen items-center justify-center px-4">
       <Card className="w-full max-w-md p-12">
         <CardHeader>
-          <h2>Welcome to your profile</h2>
+          <h1>Welcome to your profile</h1>
         </CardHeader>
         <CardContent>
           <Form {...form}>
@@ -138,52 +132,21 @@ function UserProfileForm() {
                 )}
               />
 
-              <FormField
-                control={form.control}
-                name="password"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Password</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="Set a new password"
-                        type="password"
-                        autoComplete="new-password"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="passwordConfirmation"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Password Confirmation</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="Confirm your password"
-                        type="password"
-                        autoComplete="confirm-password"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
               {form.formState.errors.root && (
                 <div className="text-red-500 text-sm mt-2">
                   {form.formState.errors.root.message}
                 </div>
               )}
 
+              {/* Display success message based on RTK Query mutation status */}
+              {localSuccessMsg && (
+                <div className="text-green-600 text-sm mt-2">
+                  {localSuccessMsg}
+                </div>
+              )}
+
               <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? "Updating..." : "Update"}
+                {isLoading || isProfileLoading ? "Updating..." : "Update"}
               </Button>
             </form>
           </Form>
