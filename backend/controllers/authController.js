@@ -20,7 +20,7 @@ export const requestMagicCode = asyncHandler(async (req, res) => {
   if (user.role === "user") {
     const code = generateMagicCode();
     user.loginCode = code;
-    user.loginCodeExpiry = Date.now() + 1000 * 60 * 10; // 10 minutes from now
+    user.loginCodeExpiry = Date.now() + 1000 * 60 * 30; // 30 minutes from now
 
     await user.save();
     await sendMagicCodeEmail(email, code);

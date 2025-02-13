@@ -23,9 +23,7 @@ import {
   CardFooter,
 } from "@/components/ui/card";
 
-const formSchema = z.object({
-  code: z.string().length(6, "Code must be 6 digits"),
-});
+const formSchema = z.object({});
 
 export default function CodeLoginPage() {
   const [isLoading, setIsLoading] = useState(false);
@@ -65,11 +63,22 @@ export default function CodeLoginPage() {
 
   async function onSubmit(data) {
     setIsLoading(true);
+    const combinedCode = code.join("");
+
+    if (combinedCode.length !== 5) {
+      form.setError("root", { message: "Code must be 5 digits" });
+      setIsLoading(false);
+      return;
+    }
+
     try {
       const response = await fetch("/api/auth/verify-code", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
+        body: JSON.stringify({
+          email: decodeURIComponent(email || ""),
+          code: combinedCode,
+        }),
       });
       const result = await response.json();
 
