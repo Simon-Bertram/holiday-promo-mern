@@ -146,11 +146,4 @@ export default function EmailLoginPage() {
       </Card>
     </div>
   );
-
-  // <form onSubmit={form.handleSubmit(onSubmit)}>
-  //   <Input placeholder="Enter your email" {...form.register("email")} />
-  //   <Button type="submit" disabled={isLoading}>
-  //     {isLoading ? "Submitting..." : "Continue"}
-  //   </Button>
-  // </form>
 }
