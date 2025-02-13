@@ -1,6 +1,6 @@
 "use client";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,23 +9,34 @@ import * as z from "zod";
 
 const formSchema = z.object({
   email: z.string().email("Invalid email address"),
+  password: z.string().min(8, "Password must be at least 8 characters"),
 });
 
-export default function EmailLoginPage() {
+export default function PasswordLoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const email = searchParams.get("email");
+
+  // If no email in URL, redirect back to login
+  useEffect(() => {
+    if (!email) {
+      router.replace("/login");
+    }
+  }, [email, router]);
 
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      email: "",
+      email: decodeURIComponent(email || ""),
+      password: "",
     },
   });
 
   async function onSubmit(data) {
     setIsLoading(true);
     try {
-      const response = await fetch("/api/auth/request-code", {
+      const response = await fetch("/api/auth/password", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
@@ -35,14 +46,7 @@ export default function EmailLoginPage() {
       if (!response.ok) {
         form.setError("root", { message: result.message });
       } else {
-        // Encode the email to handle special characters in URLs
-        const encodedEmail = encodeURIComponent(data.email);
-        // Route to code or password page based on response, including email as query param
-        if (result.nextStep === "code") {
-          router.push(`/login/code?email=${encodedEmail}`);
-        } else {
-          router.push(`/login/password?email=${encodedEmail}`);
-        }
+        router.push(result.redirect);
       }
     } catch (err) {
       form.setError("root", { message: "An error occurred" });
@@ -50,11 +54,17 @@ export default function EmailLoginPage() {
     setIsLoading(false);
   }
 
+  if (!email) return null; // Don't render form if no email
+
   return (
     <form onSubmit={form.handleSubmit(onSubmit)}>
-      <Input placeholder="Enter your email" {...form.register("email")} />
+      <Input
+        type="password"
+        placeholder="Enter your password"
+        {...form.register("password")}
+      />
       <Button type="submit" disabled={isLoading}>
-        {isLoading ? "Submitting..." : "Continue"}
+        {isLoading ? "Logging in..." : "Login"}
       </Button>
     </form>
   );
