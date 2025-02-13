@@ -4,7 +4,7 @@ import generateToken from "../utils/generateToken.js";
 import { generateMagicCode, sendMagicCodeEmail } from "../utils/email.js";
 
 // Stage 1: Request Magic Code (or password prompt for moderators/admins)
-// route: POST /api/auth/request-magic-code
+// route: POST /api/auth/request-code
 // access: Public
 export const requestMagicCode = asyncHandler(async (req, res) => {
   const { email } = req.body;

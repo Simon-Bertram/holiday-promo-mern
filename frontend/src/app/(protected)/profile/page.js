@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
+import { apiSlice } from "@/slices/apiSlice";
 import {
   useGetProfileQuery,
   useUpdateProfileMutation,
@@ -32,6 +34,7 @@ function UserProfileForm() {
   // Use RTK Query mutation state to determine if the update was successful
   const [updateProfile, { isLoading, isSuccess, isError, error: updateError }] =
     useUpdateProfileMutation();
+  const dispatch = useDispatch();
 
   // Optional local state if you want to control message presentation further
   const [localSuccessMsg, setLocalSuccessMsg] = useState("");
@@ -64,12 +67,11 @@ function UserProfileForm() {
 
   async function handleUpdateProfile(newData) {
     try {
-      const updateData = {
-        name: newData.name,
-        email: newData.email,
-      };
+      const result = await updateProfile(newData).unwrap();
+      setLocalSuccessMsg("Profile updated successfully");
 
-      await updateProfile(updateData).unwrap();
+      // Force a refetch of the profile data
+      dispatch(apiSlice.util.invalidateTags(["Profile"]));
     } catch (err) {
       const message =
         err.data?.message || err.error || "An error occurred during update";

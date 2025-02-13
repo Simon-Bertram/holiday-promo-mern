@@ -16,12 +16,8 @@ import {
 import { LogOut, User } from "lucide-react";
 
 export default function UserMenu() {
-  const {
-    data: profile,
-    isLoading,
-    error,
-  } = useGetProfileQuery(undefined, {
-    // Skip caching to always fetch fresh data
+  const { data: profile, isLoading } = useGetProfileQuery(undefined, {
+    // Ensure we're always using the latest data
     refetchOnMountOrArgChange: true,
   });
   const dispatch = useDispatch();
@@ -45,12 +41,12 @@ export default function UserMenu() {
     return <div>Loading...</div>;
   }
 
-  if (error) {
+  if (!profile) {
     return null;
   }
 
   // Use profile.name to display the initial (if available)
-  const initialLetter = profile?.name ? profile.name.slice(0, 1) : "U";
+  const initialLetter = profile.name ? profile.name.slice(0, 1) : "U";
 
   return (
     <DropdownMenu>
