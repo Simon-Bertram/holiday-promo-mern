@@ -1,9 +1,11 @@
 "use client";
-import { useState, useEffect } from "react";
+
+import { useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useDispatch } from "react-redux";
 import { setCredentials } from "@/slices/authSlice";
-import { getCookie } from "cookies-next";
+import { useLoginMutation } from "@/slices/usersApiSlice";
+import { getCookie } from "../utils/cookie.js";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -26,15 +28,16 @@ import {
 } from "@/components/ui/card";
 
 const formSchema = z.object({
+  email: z.string().email("Invalid email address"),
   password: z.string().min(8, "Password must be at least 8 characters"),
 });
 
 export default function PasswordLoginPage() {
-  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const dispatch = useDispatch();
   const searchParams = useSearchParams();
   const email = searchParams.get("email");
+  const [login, { isLoading: isAuthenticating }] = useLoginMutation();
 
   // If no email in URL, redirect back to login
   useEffect(() => {
@@ -52,28 +55,21 @@ export default function PasswordLoginPage() {
   });
 
   async function onSubmit(data) {
-    setIsLoading(true);
     try {
-      const API_URL =
-        process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
-      const response = await fetch(`${API_URL}/api/auth/password`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
-      const result = await response.json();
+      const res = await login(data).unwrap();
 
-      if (!response.ok) {
-        form.setError("root", { message: result.message });
-      } else {
-        // Dispatch the setCredentials action with the user data and token
-        dispatch(setCredentials({ ...result, token: getCookie("jwt") }));
-        router.push(result.redirect);
-      }
+      dispatch(setCredentials({ ...res, token: getCookie("jwt") }));
+      router.push("/profile");
     } catch (err) {
-      form.setError("root", { message: "An error occurred" });
+      console.error("Error details:", err);
+      const message =
+        err.data?.message || err.error || "Invalid email or password";
+
+      form.setError("root", {
+        type: "manual",
+        message: message,
+      });
     }
-    setIsLoading(false);
   }
 
   if (!email) return null; // Don't render form if no email
@@ -101,7 +97,7 @@ export default function PasswordLoginPage() {
                         type="password"
                         placeholder="Enter your password"
                         {...field}
-                        disabled={isLoading}
+                        disabled={isAuthenticating}
                       />
                     </FormControl>
                     <FormMessage />
@@ -113,8 +109,12 @@ export default function PasswordLoginPage() {
                   {form.formState.errors.root.message}
                 </div>
               )}
-              <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? "Logging in..." : "Login"}
+              <Button
+                type="submit"
+                className="w-full"
+                disabled={isAuthenticating}
+              >
+                {isAuthenticating ? "Authenticating..." : "Login"}
               </Button>
             </form>
           </Form>
@@ -140,15 +140,5 @@ export default function PasswordLoginPage() {
         </CardFooter>
       </Card>
     </div>
-    // <form onSubmit={form.handleSubmit(onSubmit)}>
-    //   <Input
-    //     type="password"
-    //     placeholder="Enter your password"
-    //     {...form.register("password")}
-    //   />
-    //   <Button type="submit" disabled={isLoading}>
-    //     {isLoading ? "Logging in..." : "Login"}
-    //   </Button>
-    // </form>
   );
 }
