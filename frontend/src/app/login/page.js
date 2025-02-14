@@ -55,8 +55,6 @@ export default function EmailLoginPage() {
         // Encode the email to handle special characters in URLs
         const encodedEmail = encodeURIComponent(data.email);
 
-        console.log(result.nextStep);
-
         // Define allowed next step values along with their routes
         const VALID_NEXT_STEPS = {
           "verify-magic-code": "/verify-magic-code",
@@ -133,7 +131,7 @@ export default function EmailLoginPage() {
         </CardContent>
         <CardFooter className="flex flex-col space-y-4">
           <div className="text-sm text-center">
-            Don&apos;t have an account?{" "}
+            <p>Don&apos;t have an account?</p>
             <Button
               variant="link"
               className="p-0"

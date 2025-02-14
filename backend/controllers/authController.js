@@ -39,12 +39,19 @@ export const requestMagicCode = asyncHandler(async (req, res) => {
 });
 
 // Stage 2: Verify Magic Code
-// route: POST /api/auth/verify-magic-code
+// route: POST /api/auth/verify-code
 // access: Public
 export const verifyMagicCode = asyncHandler(async (req, res) => {
   const { email, code } = req.body;
+  console.log("Received verification request:", { email, code });
 
   const user = await User.findOne({ email });
+  console.log("Found user:", {
+    hasUser: !!user,
+    storedCode: user?.loginCode,
+    codeExpiry: user?.loginCodeExpiry,
+    currentTime: Date.now(),
+  });
 
   if (!user) {
     res.status(404);
@@ -52,9 +59,18 @@ export const verifyMagicCode = asyncHandler(async (req, res) => {
   }
 
   if (user.loginCode !== code || user.loginCodeExpiry < Date.now()) {
+    console.log("Code validation failed:", {
+      codesMatch: user.loginCode === code,
+      isExpired: user.loginCodeExpiry < Date.now(),
+    });
     res.status(400);
     throw new Error("Invalid or expired code");
   }
+
+  // Clear the code after successful verification
+  user.loginCode = undefined;
+  user.loginCodeExpiry = undefined;
+  await user.save();
 
   // Issue token and log in the regular user
   generateToken(res, user._id);

@@ -1,6 +1,7 @@
 import { apiSlice } from "./apiSlice";
 
 const USERS_URL = "/api/users";
+const AUTH_URL = "/api/auth";
 
 // Inject endpoints for user-related operations
 export const usersApiSlice = apiSlice.injectEndpoints({
@@ -9,6 +10,18 @@ export const usersApiSlice = apiSlice.injectEndpoints({
     login: builder.mutation({
       query: (data) => ({
         url: `${USERS_URL}/auth`,
+        method: "POST",
+        body: data,
+      }),
+      // Handle errors properly
+      transformErrorResponse: (response) => {
+        return response.data ?? { message: "An error occurred" };
+      },
+    }),
+
+    codeLogin: builder.mutation({
+      query: (data) => ({
+        url: `${AUTH_URL}/verify-code`,
         method: "POST",
         body: data,
       }),
@@ -69,6 +82,7 @@ export const usersApiSlice = apiSlice.injectEndpoints({
 // Export hooks for use in components
 export const {
   useLoginMutation,
+  useCodeLoginMutation,
   useLogoutMutation,
   useRegisterMutation,
   useGetProfileQuery,
