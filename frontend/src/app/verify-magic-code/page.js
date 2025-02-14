@@ -4,6 +4,8 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
+import { useLoginMutation } from "@/slices/usersApiSlice";
+import { setCredentials } from "@/slices/authSlice";
 
 // Shadcn UI
 import { Button } from "@/components/ui/button";
@@ -72,7 +74,9 @@ export default function CodeLoginPage() {
     }
 
     try {
-      const response = await fetch("/api/auth/verify-code", {
+      const API_URL =
+        process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+      const response = await fetch(`${API_URL}/api/auth/verify-code`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -85,6 +89,8 @@ export default function CodeLoginPage() {
       if (!response.ok) {
         form.setError("root", { message: result.message });
       } else {
+        // Dispatch the setCredentials action with the user data and token
+        dispatch(setCredentials({ ...res, token: getCookie("jwt") }));
         router.push(result.redirect);
       }
     } catch (err) {
@@ -154,12 +160,5 @@ export default function CodeLoginPage() {
         </CardContent>
       </Card>
     </div>
-
-    // <form onSubmit={form.handleSubmit(onSubmit)}>
-    //   <Input placeholder="Enter your 6-digit code" {...form.register("code")} />
-    //   <Button type="submit" disabled={isLoading}>
-    //     {isLoading ? "Verifying..." : "Submit Code"}
-    //   </Button>
-    // </form>
   );
 }
