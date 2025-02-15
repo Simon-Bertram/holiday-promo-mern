@@ -3,11 +3,13 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSelector } from "react-redux";
+import { useAuthProfile } from "./useAuthProfile";
 
 export function useAuth(requireAuth = true) {
   const router = useRouter();
   const [isAuthorized, setIsAuthorized] = useState(false);
   const { userInfo, loading } = useSelector((state) => state.auth);
+  const { data: profile, isLoading: profileLoading } = useAuthProfile();
 
   useEffect(() => {
     if (!loading) {

@@ -7,7 +7,7 @@ const AUTH_URL = "/api/auth";
 export const usersApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     // Login mutation
-    login: builder.mutation({
+    passwordLogin: builder.mutation({
       query: (data) => ({
         url: `${USERS_URL}/auth`,
         method: "POST",
@@ -19,7 +19,7 @@ export const usersApiSlice = apiSlice.injectEndpoints({
       },
     }),
 
-    codeLogin: builder.mutation({
+    magicCodeLogin: builder.mutation({
       query: (data) => ({
         url: `${AUTH_URL}/verify-code`,
         method: "POST",
@@ -58,6 +58,10 @@ export const usersApiSlice = apiSlice.injectEndpoints({
         method: "GET",
         credentials: "include",
       }),
+      transformResponse: (response) => ({
+        ...response, // Spread all existing properties
+        role: response.role || "user", // Ensure role is always defined
+      }),
       providesTags: ["Profile"],
       // Add cache invalidation on logout
       keepUnusedDataFor: 0,
@@ -81,8 +85,8 @@ export const usersApiSlice = apiSlice.injectEndpoints({
 
 // Export hooks for use in components
 export const {
-  useLoginMutation,
-  useCodeLoginMutation,
+  usePasswordLoginMutation,
+  useMagicCodeLoginMutation,
   useLogoutMutation,
   useRegisterMutation,
   useGetProfileQuery,

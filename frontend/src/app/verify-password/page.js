@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useDispatch } from "react-redux";
 import { setCredentials } from "@/slices/authSlice";
-import { useLoginMutation } from "@/slices/usersApiSlice";
+import { usePasswordLoginMutation } from "@/slices/usersApiSlice";
 import { getCookie } from "../utils/cookie.js";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -37,7 +37,7 @@ export default function PasswordLoginPage() {
   const dispatch = useDispatch();
   const searchParams = useSearchParams();
   const email = searchParams.get("email");
-  const [login, { isLoading: isAuthenticating }] = useLoginMutation();
+  const [login, { isLoading: isAuthenticating }] = usePasswordLoginMutation();
 
   // If no email in URL, redirect back to login
   useEffect(() => {
@@ -59,7 +59,7 @@ export default function PasswordLoginPage() {
       const res = await login(data).unwrap();
 
       dispatch(setCredentials({ ...res, token: getCookie("jwt") }));
-      router.push("/profile");
+      router.push(res.redirect || "/dashboard");
     } catch (err) {
       console.error("Error details:", err);
       const message =

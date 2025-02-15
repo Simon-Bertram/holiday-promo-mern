@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { useCodeLoginMutation } from "@/slices/usersApiSlice";
+import { useMagicCodeLoginMutation } from "@/slices/usersApiSlice";
 import { setCredentials } from "@/slices/authSlice";
 import { getCookie } from "@/app/utils/cookie";
 
@@ -40,7 +40,7 @@ export default function CodeLoginPage() {
   const decodedEmail = email ? decodeURIComponent(email) : "";
   // Get both the mutation function and its loading state
   const [login, { isLoading: isAuthenticating, error: loginError }] =
-    useCodeLoginMutation();
+    useMagicCodeLoginMutation();
 
   // Get the global auth loading state if needed
   const { isLoading: isAuthLoading } = useSelector((state) => state.auth);
