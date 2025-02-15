@@ -54,10 +54,19 @@ export default function PasswordLoginPage() {
     },
   });
 
+  // useEffect to focus the password input
+  useEffect(() => {
+    // Small delay to ensure the input is mounted
+    const timer = setTimeout(() => {
+      form.setFocus("password");
+    }, 100);
+
+    return () => clearTimeout(timer);
+  }, [form]);
+
   async function onSubmit(data) {
     try {
       const res = await login(data).unwrap();
-
       dispatch(setCredentials({ ...res, token: getCookie("jwt") }));
       router.push(res.redirect || "/dashboard");
     } catch (err) {
@@ -65,10 +74,9 @@ export default function PasswordLoginPage() {
       const message =
         err.data?.message || err.error || "Invalid email or password";
 
-      form.setError("root", {
-        type: "manual",
-        message: message,
-      });
+      // Instead of letting the role check redirect to /unauthorized
+      // Handle the error here and redirect to login with an error message
+      router.push("/login?error=" + encodeURIComponent(message));
     }
   }
 
@@ -98,6 +106,7 @@ export default function PasswordLoginPage() {
                         placeholder="Enter your password"
                         {...field}
                         disabled={isAuthenticating}
+                        autoFocus
                       />
                     </FormControl>
                     <FormMessage />

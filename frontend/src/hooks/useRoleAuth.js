@@ -10,15 +10,19 @@ const role = {
 };
 
 export function useRoleAuth(requiredRoles) {
-  const { isLoading: authLoding } = useAuth();
+  const { isLoading: authLoading, user } = useAuth();
   const { data: profile, isLoading: profileLoading } = useAuthProfile();
 
-  const isAuthorized = profile?.role && requiredRoles.includes(profile.role);
-  const isLoading = authLoding || profileLoading;
+  const isAuthorized = Boolean(
+    profile?.role && requiredRoles.includes(profile.role)
+  );
+
+  const isLoading = authLoading || profileLoading;
 
   return {
     isAuthorized,
     isLoading,
     profile,
+    user,
   };
 }

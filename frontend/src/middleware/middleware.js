@@ -8,7 +8,7 @@ export function middleware(request) {
   const isAuthenticated = request.cookies.get("jwt")?.value;
 
   // Define protected routes
-  const protectedRoutes = ["/profile"];
+  const protectedRoutes = ["/profile", "/dashboard"];
   const isProtectedRoute = protectedRoutes.includes(path);
 
   // Redirect logic
@@ -23,5 +23,5 @@ export function middleware(request) {
 
 // Configure which routes to run middleware on
 export const config = {
-  matcher: "/profile",
+  matcher: ["/profile", "/dashboard"],
 };

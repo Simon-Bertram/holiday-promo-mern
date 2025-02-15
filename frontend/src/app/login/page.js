@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -21,6 +21,8 @@ import {
   CardContent,
   CardFooter,
 } from "@/components/ui/card";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { AlertCircle } from "lucide-react";
 
 const formSchema = z.object({
   email: z.string().email("Invalid email address"),
@@ -29,6 +31,8 @@ const formSchema = z.object({
 export default function EmailLoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const errorMessage = searchParams.get("error");
 
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -89,14 +93,17 @@ export default function EmailLoginPage() {
 
   return (
     <div className="flex min-h-screen items-center justify-center px-4">
-      <Card className="w-full max-w-sm">
-        <CardHeader className="space-y-1">
-          <h1 className="text-2xl font-bold text-center">Login</h1>
-          <p className="text-sm text-muted-foreground text-center">
-            Enter your credentials to access your account
-          </p>
+      <Card className="w-full max-w-md p-12">
+        <CardHeader>
+          <h1 className="text-2xl font-semibold">Login</h1>
         </CardHeader>
         <CardContent>
+          {errorMessage && (
+            <Alert variant="destructive" className="mb-6">
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>{errorMessage}</AlertDescription>
+            </Alert>
+          )}
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
               <FormField
