@@ -2,7 +2,13 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 // Base query setup with empty baseUrl since we're using relative URLs
 // This works with Next.js API routes which are served from the same origin
-const baseQuery = fetchBaseQuery({ baseUrl: "" });
+const baseQuery = fetchBaseQuery({
+  baseUrl: "/api",
+  credentials: "include",
+  prepareHeaders: (headers) => {
+    return headers;
+  },
+});
 
 // Create the API slice - this is the core RTK Query configuration
 export const apiSlice = createApi({

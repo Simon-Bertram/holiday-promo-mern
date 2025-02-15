@@ -1,15 +1,12 @@
 import { apiSlice } from "./apiSlice";
 
-const USERS_URL = "/api/users";
-const AUTH_URL = "/api/auth";
-
 // Inject endpoints for user-related operations
 export const usersApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     // Login mutation
     passwordLogin: builder.mutation({
       query: (data) => ({
-        url: `${USERS_URL}/auth`,
+        url: "users/auth",
         method: "POST",
         body: data,
       }),
@@ -21,7 +18,7 @@ export const usersApiSlice = apiSlice.injectEndpoints({
 
     magicCodeLogin: builder.mutation({
       query: (data) => ({
-        url: `${AUTH_URL}/verify-code`,
+        url: "auth/verify-code",
         method: "POST",
         body: data,
       }),
@@ -33,7 +30,7 @@ export const usersApiSlice = apiSlice.injectEndpoints({
 
     logout: builder.mutation({
       query: () => ({
-        url: `${USERS_URL}/logout`,
+        url: "users/logout",
         method: "POST",
       }),
     }),
@@ -41,7 +38,7 @@ export const usersApiSlice = apiSlice.injectEndpoints({
     // Register mutation
     register: builder.mutation({
       query: (data) => ({
-        url: `${USERS_URL}`,
+        url: "users",
         method: "POST",
         body: data,
       }),
@@ -54,9 +51,8 @@ export const usersApiSlice = apiSlice.injectEndpoints({
     // Get user profile query
     getProfile: builder.query({
       query: () => ({
-        url: `${USERS_URL}/profile`,
+        url: "users/profile",
         method: "GET",
-        credentials: "include",
       }),
       transformResponse: (response) => ({
         ...response, // Spread all existing properties
@@ -70,9 +66,8 @@ export const usersApiSlice = apiSlice.injectEndpoints({
     // Update profile mutation
     updateProfile: builder.mutation({
       query: (data) => ({
-        url: `${USERS_URL}/profile`,
+        url: "users/profile",
         method: "PUT",
-        credentials: "include",
         body: data,
       }),
       // Invalidate the specific profile that was updated
