@@ -8,6 +8,7 @@ import { notFound, errorHandler } from "./middleware/errorMiddleware.js";
 import connectDB from "./config/db.js";
 import userRoutes from "./routes/userRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
+import subscriberRoutes from "./routes/subscriberRoutes.js";
 
 const COOKIE_SECRET = process.env.COOKIE_SECRET || "your-fallback-secret-key";
 
@@ -31,7 +32,7 @@ app.use(
 app.use(cookieParser(COOKIE_SECRET)); // Parse cookies
 app.use("/api/users", userRoutes);
 app.use("/api/auth", authRoutes);
-
+app.use("/api/subscribers", subscriberRoutes);
 app.get("/", (req, res) => {
   res.send("API is running");
 });
