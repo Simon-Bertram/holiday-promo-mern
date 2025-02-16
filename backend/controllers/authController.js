@@ -84,7 +84,7 @@ export const verifyMagicCode = asyncHandler(async (req, res) => {
 });
 
 // Stage 2 (alternative): Password login for moderators/admins
-// route: POST /api/auth/password-login
+// route: POST /api/auth/password
 // access: Public
 export const passwordLogin = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
@@ -95,11 +95,6 @@ export const passwordLogin = asyncHandler(async (req, res) => {
     res.status(404);
     throw new Error("User not found");
   }
-
-  // Clear the code after successful verification
-  user.loginCode = undefined;
-  user.loginCodeExpiry = undefined;
-  await user.save();
 
   if (await user.matchPassword(password)) {
     generateToken(res, user._id);
