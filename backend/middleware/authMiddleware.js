@@ -22,4 +22,19 @@ const protect = asyncHandler(async (req, res, next) => {
   }
 });
 
-export { protect };
+/**
+ * Middleware to restrict access to specific roles.
+ * @param {...string} roles - Allowed roles (e.g., 'admin', 'moderator')
+ */
+const authorizeRoles = (...roles) => {
+  return (req, res, next) => {
+    if (req.user && roles.includes(req.user.role)) {
+      next();
+    } else {
+      res.status(403);
+      throw new Error("Access denied: insufficient permissions");
+    }
+  };
+};
+
+export { protect, authorizeRoles };
