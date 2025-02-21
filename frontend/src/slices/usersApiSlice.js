@@ -6,14 +6,20 @@ export const usersApiSlice = apiSlice.injectEndpoints({
     // Login mutation
     passwordLogin: builder.mutation({
       query: (data) => ({
-        url: "users/auth",
+        url: "/auth/password",
         method: "POST",
         body: data,
       }),
-      // Handle errors properly
-      transformErrorResponse: (response) => {
-        return response.data ?? { message: "An error occurred" };
-      },
+      // Add profile data to login response
+      transformResponse: (response) => ({
+        ...response,
+        profile: {
+          ...response.profile,
+          role: response.profile?.role || "user",
+        },
+      }),
+      // Invalidate profile cache on login
+      invalidatesTags: ["Profile"],
     }),
 
     magicCodeLogin: builder.mutation({
