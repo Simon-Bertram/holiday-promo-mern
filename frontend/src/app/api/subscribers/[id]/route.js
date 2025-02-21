@@ -1,18 +1,16 @@
 import { NextResponse } from "next/server";
+import config from "@/config";
 
 export async function GET(request, { params }) {
   try {
     const { id } = params;
 
-    const response = await fetch(
-      `${process.env.BACKEND_URL}/api/subscribers/${id}`,
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
+    const response = await fetch(`${config.backendUrl}/api/subscribers/${id}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
 
     const data = await response.json();
 

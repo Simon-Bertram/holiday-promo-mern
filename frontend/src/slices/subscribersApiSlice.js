@@ -7,12 +7,14 @@ export const subscribersApiSlice = apiSlice.injectEndpoints({
         url: "/subscribers",
         method: "GET",
       }),
+      providesTags: ["Subscribers"],
     }),
     getSubscriberById: builder.query({
       query: (id) => ({
         url: `/subscribers/${id}`,
         method: "GET",
       }),
+      providesTags: ["Subscribers"],
     }),
     createSubscriber: builder.mutation({
       query: (data) => ({
@@ -20,6 +22,7 @@ export const subscribersApiSlice = apiSlice.injectEndpoints({
         method: "POST",
         body: data,
       }),
+      invalidatesTags: ["Subscribers"],
     }),
     updateSubscriber: builder.mutation({
       query: ({ id, ...data }) => ({
@@ -27,12 +30,14 @@ export const subscribersApiSlice = apiSlice.injectEndpoints({
         method: "PUT",
         body: data,
       }),
+      invalidatesTags: ["Subscribers"],
     }),
     deleteSubscriber: builder.mutation({
       query: (id) => ({
         url: `/subscribers/${id}`,
         method: "DELETE",
       }),
+      invalidatesTags: ["Subscribers"],
     }),
   }),
 });
