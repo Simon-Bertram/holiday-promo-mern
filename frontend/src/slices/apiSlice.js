@@ -18,7 +18,7 @@ export const apiSlice = createApi({
 
   // Define which types of data we may be caching
   // This enables automatic cache invalidation
-  tagTypes: ["User", "Profile"],
+  tagTypes: ["User", "Profile", "Subscribers"],
 
   // endpoints will be injected from other files
   endpoints: (builder) => ({}),
