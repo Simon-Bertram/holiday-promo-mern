@@ -1,6 +1,6 @@
 import asyncHandler from "express-async-handler";
 import User from "../models/userModel.js";
-import { protect } from "../middleware/authMiddleware.js";
+import mongoose from "mongoose";
 
 // @desc: fetch all subscribers
 // route: GET /api/subscribers
@@ -17,16 +17,33 @@ const getSubscribers = asyncHandler(async (req, res) => {
 });
 
 // @desc    Get a single subscriber
-// @route   GET /api/subscribers/:id
+// @route   GET /api/subscribers/getSubscriber
 // @access  Private - accessible to moderators and admins only
 const getSubscriber = asyncHandler(async (req, res) => {
-  const subscriber = await User.findById(req.params.id, {
+  const searchParam = req.params.id;
+
+  // Build the query conditions
+  const conditions = [{ email: searchParam }, { name: searchParam }];
+
+  // Only add _id condition if it's a valid ObjectId
+  if (mongoose.isValidObjectId(searchParam)) {
+    conditions.unshift({ _id: searchParam });
+  }
+
+  const subscriber = await User.findOne({
+    $or: conditions,
     role: "user",
   }).select("name email isVerified");
+
+  console.log("Search Parameter:", searchParam);
+  console.log("Query Conditions:", conditions);
+  console.log("Found Subscriber:", subscriber);
+
   if (!subscriber) {
     res.status(404);
-    throw new Error("Problem fetching subscriber");
+    throw new Error("Subscriber not found");
   }
+
   res.status(200).json(subscriber);
 });
 

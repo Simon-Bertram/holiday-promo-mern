@@ -14,12 +14,16 @@ const router = express.Router();
 // Only users with role 'moderator' or 'admin' will be allowed.
 router.use(protect, authorizeRoles("moderator", "admin"));
 
-router.route("/").get(getSubscribers).post(createSubscriber);
+// This route handles endpoints at the base path '/api/subscribers'
+router
+  .route("/")
+  .get(getSubscribers) // GET /api/subscribers - Get all subscribers
+  .post(createSubscriber); // POST /api/subscribers - Create a new subscriber
 
 router
   .route("/:id")
-  .get(getSubscriber)
-  .put(updateSubscriber)
-  .delete(deleteSubscriber);
+  .get(getSubscriber) // GET /api/subscribers/:id - Get a single subscriber by ID
+  .put(updateSubscriber) // PUT /api/subscribers/:id - Update a subscriber
+  .delete(deleteSubscriber); // DELETE /api/subscribers/:id - Delete a subscriber
 
 export default router;

@@ -84,14 +84,6 @@ export default function CodeLoginPage() {
 
   async function onSubmit(data) {
     try {
-      // Log the exact request data
-      console.log("Sending verification request:", {
-        email: decodedEmail,
-        code: data.code,
-        rawEmail: email,
-        formData: data,
-      });
-
       const result = await login({
         email: decodedEmail,
         code: data.code,
