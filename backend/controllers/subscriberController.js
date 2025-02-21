@@ -35,10 +35,6 @@ const getSubscriber = asyncHandler(async (req, res) => {
     role: "user",
   }).select("name email isVerified");
 
-  console.log("Search Parameter:", searchParam);
-  console.log("Query Conditions:", conditions);
-  console.log("Found Subscriber:", subscriber);
-
   if (!subscriber) {
     res.status(404);
     throw new Error("Subscriber not found");
@@ -68,10 +64,33 @@ const updateSubscriber = asyncHandler(async (req, res) => {
   );
   res.status(200).json(subscriber);
 });
-// @route   DELETE /api/subscribers/:id
+
+// @desc    Delete a subscriber
+// @route   DELETE /api/subscribers/[id_or_email_or_name]
 // @access  Private (protected via middleware)
 const deleteSubscriber = asyncHandler(async (req, res) => {
-  const subscriber = await User.findByIdAndDelete(req.params.id);
+  const searchParam = req.params.id;
+
+  // Build the query conditions
+  const conditions = [{ email: searchParam }, { name: searchParam }];
+
+  // Only add _id condition if it's a valid ObjectId
+  if (mongoose.isValidObjectId(searchParam)) {
+    conditions.unshift({ _id: searchParam });
+  }
+
+  const subscriber = await User.findOneAndDelete({
+    $or: conditions,
+    role: "user",
+  });
+
+  console.log("Found subscriber:", subscriber);
+
+  if (!subscriber) {
+    res.status(404);
+    throw new Error("Subscriber not found");
+  }
+
   res.status(200).json(subscriber);
 });
 

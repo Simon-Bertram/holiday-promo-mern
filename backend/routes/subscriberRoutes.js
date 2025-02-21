@@ -24,6 +24,6 @@ router
   .route("/:id")
   .get(getSubscriber) // GET /api/subscribers/:id - Get a single subscriber by ID
   .put(updateSubscriber) // PUT /api/subscribers/:id - Update a subscriber
-  .delete(deleteSubscriber); // DELETE /api/subscribers/:id - Delete a subscriber
+  .delete(deleteSubscriber); // DELETE /api/subscribers/[id_or_email_or_name] - Delete a subscriber
 
 export default router;

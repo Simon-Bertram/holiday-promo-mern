@@ -5,7 +5,13 @@ const userSchema = new mongoose.Schema(
   {
     name: { type: String, required: true },
     email: { type: String, required: true, unique: true },
-    password: { type: String, required: true },
+    password: {
+      type: String,
+      required: function () {
+        // Password is only required for admin/moderator roles
+        return ["admin", "moderator"].includes(this.role);
+      },
+    },
     isVerified: { type: Boolean, required: true, default: false },
     role: {
       type: String,
@@ -28,8 +34,9 @@ const userSchema = new mongoose.Schema(
 );
 
 userSchema.pre("save", async function (next) {
-  if (!this.isModified("password")) {
-    next();
+  // Only hash the password if it's been modified (or is new) AND exists
+  if (!this.isModified("password") || !this.password) {
+    return next();
   }
   const salt = await bcrypt.genSalt(10);
   this.password = await bcrypt.hash(this.password, salt);
