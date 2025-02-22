@@ -66,3 +66,41 @@ export async function POST(request) {
     );
   }
 }
+
+export async function DELETE(request, { params }) {
+  try {
+    const { id } = params;
+    const cookie = request.headers.get("cookie");
+
+    const response = await fetch(`${config.backendUrl}/api/subscribers/${id}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+    });
+
+    if (response.status === 401 || response.status === 403) {
+      return NextResponse.json(
+        { error: "Unauthorized access" },
+        { status: response.status }
+      );
+    }
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      return NextResponse.json(
+        { error: data.message || "Failed to delete subscriber" },
+        { status: response.status }
+      );
+    }
+
+    return NextResponse.json(data);
+  } catch (error) {
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 }
+    );
+  }
+}
