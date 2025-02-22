@@ -57,6 +57,7 @@ export const subscribersApiSlice = apiSlice.injectEndpoints({
       }),
       invalidatesTags: ["Subscribers"],
     }),
+    // Delete a subscriber
     deleteSubscriber: builder.mutation({
       query: (id) => ({
         url: `/subscribers/${id}`,

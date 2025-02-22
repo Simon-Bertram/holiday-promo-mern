@@ -1,9 +1,10 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import config from "@/config";
 
 // Base query setup with empty baseUrl since we're using relative URLs
 // This works with Next.js API routes which are served from the same origin
 const baseQuery = fetchBaseQuery({
-  baseUrl: "/api",
+  baseUrl: config.backendUrl + "/api",
   credentials: "include",
   prepareHeaders: (headers) => {
     headers.set("Content-Type", "application/json");

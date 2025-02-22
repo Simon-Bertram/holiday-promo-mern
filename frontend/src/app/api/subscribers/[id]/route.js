@@ -73,6 +73,11 @@ export async function DELETE(request, props) {
   try {
     const { id } = params;
 
+    console.log(
+      "Forwarding delete request to backend:",
+      `${config.backendUrl}/api/subscribers/${id}`
+    );
+
     // save the response to the delete fetch
     const response = await fetch(`${config.backendUrl}/api/subscribers/${id}`, {
       method: "DELETE",
@@ -82,6 +87,12 @@ export async function DELETE(request, props) {
       credentials: "include",
     });
 
+    // Try to get the response data even if it's an error
+    const data = await response
+      .json()
+      .catch((e) => ({ error: "Failed to parse response" }));
+    console.log("Backend response status:", response.status);
+
     // check if the response status is unauthorized
     if (response.status === 401 || response.status === 403) {
       return NextResponse.json(
@@ -89,9 +100,6 @@ export async function DELETE(request, props) {
         { status: response.status }
       );
     }
-
-    // get the data from the response - in json format
-    const data = await response.json();
 
     if (!response.ok) {
       return NextResponse.json(
@@ -102,6 +110,7 @@ export async function DELETE(request, props) {
 
     return NextResponse.json(data);
   } catch (error) {
+    console.error("Error in DELETE route:", error);
     return NextResponse.json(
       { error: "Internal Server Error" },
       { status: 500 }

@@ -65,17 +65,14 @@ export default function DashboardPage() {
 
   const handleDelete = async (subscriberId) => {
     try {
-      const result = await deleteSubscriber(subscriberId).unwrap();
-      if (result.message) {
-        toast({
-          description: result.message,
-          variant: "success",
-        });
-      }
+      await deleteSubscriber(subscriberId).unwrap();
+      toast({
+        description: "Subscriber deleted successfully",
+        variant: "success",
+      });
       refetch();
-    } catch (error) {
-      if (error.status === 401 || error.status === 403) {
-        // Session expired or unauthorized
+    } catch (err) {
+      if (err.status === 401 || err.status === 403) {
         router.push(
           "/login?error=" +
             encodeURIComponent(
@@ -83,13 +80,10 @@ export default function DashboardPage() {
             )
         );
       } else {
-        const errorMessage =
-          error?.data?.message || "Error deleting subscriber";
         toast({
-          description: errorMessage,
+          description: err.data?.message || "Error deleting subscriber",
           variant: "destructive",
         });
-        console.error("Error deleting subscriber:", error);
       }
     }
   };

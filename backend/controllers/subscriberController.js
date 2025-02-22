@@ -66,25 +66,18 @@ const updateSubscriber = asyncHandler(async (req, res) => {
 });
 
 // @desc    Delete a subscriber
-// @route   DELETE /api/subscribers/[id_or_email_or_name]
+// @route   DELETE /api/subscribers/:id
 // @access  Private (protected via middleware)
 const deleteSubscriber = asyncHandler(async (req, res) => {
-  const searchParam = req.params.id;
-
-  // Build the query conditions
-  const conditions = [{ email: searchParam }, { name: searchParam }];
-
-  // Only add _id condition if it's a valid ObjectId
-  if (mongoose.isValidObjectId(searchParam)) {
-    conditions.unshift({ _id: searchParam });
+  if (!mongoose.isValidObjectId(req.params.id)) {
+    res.status(400);
+    throw new Error("Invalid subscriber ID");
   }
 
   const subscriber = await User.findOneAndDelete({
-    $or: conditions,
+    _id: req.params.id,
     role: "user",
   });
-
-  console.log("Found subscriber:", subscriber);
 
   if (!subscriber) {
     res.status(404);
