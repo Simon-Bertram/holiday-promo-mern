@@ -3,8 +3,11 @@
 import { useRoleAuth } from "@/hooks/useRoleAuth";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { Loader2 } from "lucide-react";
-import { useGetSubscribersQuery } from "@/slices/subscribersApiSlice";
+import { Loader2, Trash2 } from "lucide-react";
+import {
+  useGetSubscribersQuery,
+  useDeleteSubscriberMutation,
+} from "@/slices/subscribersApiSlice";
 import {
   Table,
   TableBody,
@@ -14,6 +17,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -27,6 +31,8 @@ export default function DashboardPage() {
     error: subscribersError,
     refetch,
   } = useGetSubscribersQuery();
+  const [deleteSubscriber, { isLoading: isDeleting }] =
+    useDeleteSubscriberMutation();
 
   useEffect(() => {
     if (!isLoading && !isAuthorized) {
@@ -38,6 +44,15 @@ export default function DashboardPage() {
       );
     }
   }, [isLoading, isAuthorized, router]);
+
+  const handleDelete = async (subscriberId) => {
+    try {
+      await deleteSubscriber(subscriberId).unwrap();
+      refetch();
+    } catch (error) {
+      console.error("Error deleting subscriber:", error);
+    }
+  };
 
   if (isLoading || isLoadingSubscribers) {
     return (
@@ -91,8 +106,15 @@ export default function DashboardPage() {
                 </TableCell>
                 <TableCell className="text-right">
                   {/* Add actions here later */}
+
                   <span className="text-sm text-muted-foreground">
-                    No actions
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => handleDelete(subscriber._id)}
+                    >
+                      <Trash2 color="red" className="w-4 h-4" />
+                    </Button>
                   </span>
                 </TableCell>
               </TableRow>
