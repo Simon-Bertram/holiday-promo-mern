@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import config from "@/config";
 
-export async function GET(request, { params }) {
+export async function GET(request, props) {
+  const params = await props.params;
   try {
     const { id } = params;
 
@@ -31,7 +32,8 @@ export async function GET(request, { params }) {
   }
 }
 
-export async function PUT(request, { params }) {
+export async function PUT(request, props) {
+  const params = await props.params;
   try {
     const { id } = params;
     const body = await request.json();
@@ -66,7 +68,8 @@ export async function PUT(request, { params }) {
   }
 }
 
-export async function DELETE(request, { params }) {
+export async function DELETE(request, props) {
+  const params = await props.params;
   try {
     const { id } = params;
 
