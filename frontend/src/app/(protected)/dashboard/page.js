@@ -65,7 +65,7 @@ export default function DashboardPage() {
 
   const handleDelete = async (subscriberId) => {
     try {
-      const result = await deleteSubscriber({ id: subscriberId }).unwrap();
+      const result = await deleteSubscriber(subscriberId).unwrap();
       if (result.message) {
         toast({
           description: result.message,
@@ -83,8 +83,10 @@ export default function DashboardPage() {
             )
         );
       } else {
+        const errorMessage =
+          error?.data?.message || "Error deleting subscriber";
         toast({
-          description: "Error deleting subscriber",
+          description: errorMessage,
           variant: "destructive",
         });
         console.error("Error deleting subscriber:", error);
