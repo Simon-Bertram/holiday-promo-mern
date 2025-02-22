@@ -73,12 +73,6 @@ export default function EmailLoginPage() {
           return;
         }
 
-        console.log(
-          `Redirect url: ${
-            VALID_NEXT_STEPS[result.nextStep]
-          }?email=${encodedEmail}`
-        );
-
         // Redirect based on the valid nextStep value
         router.push(
           `${VALID_NEXT_STEPS[result.nextStep]}?email=${encodedEmail}`
