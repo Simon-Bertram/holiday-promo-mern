@@ -3,13 +3,14 @@ import config from "@/config";
 
 export async function GET(request, { params }) {
   try {
-    const id = await params.id;
+    const { id } = params;
 
     const response = await fetch(`${config.backendUrl}/api/subscribers/${id}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
       },
+      credentials: "include",
     });
 
     const data = await response.json();
@@ -32,7 +33,7 @@ export async function GET(request, { params }) {
 
 export async function PUT(request, { params }) {
   try {
-    const id = await params.id;
+    const { id } = params;
     const body = await request.json();
 
     const response = await fetch(
@@ -43,6 +44,7 @@ export async function PUT(request, { params }) {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(body),
+        credentials: "include",
       }
     );
 
@@ -66,7 +68,7 @@ export async function PUT(request, { params }) {
 
 export async function DELETE(request, { params }) {
   try {
-    const id = await params.id;
+    const { id } = params;
 
     // save the response to the delete fetch
     const response = await fetch(`${config.backendUrl}/api/subscribers/${id}`, {
