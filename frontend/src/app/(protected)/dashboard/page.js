@@ -45,12 +45,42 @@ export default function DashboardPage() {
     }
   }, [isLoading, isAuthorized, router]);
 
+  // Add periodic authentication check
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        await refetch();
+      } catch (error) {
+        if (error.status === 401 || error.status === 403) {
+          router.push("/login");
+        }
+      }
+    };
+
+    // Check auth every 5 minutes
+    const interval = setInterval(checkAuth, 5 * 60 * 1000);
+    return () => clearInterval(interval);
+  }, [refetch, router]);
+
   const handleDelete = async (subscriberId) => {
     try {
-      await deleteSubscriber(subscriberId).unwrap();
+      const result = await deleteSubscriber(subscriberId).unwrap();
+      if (result.message) {
+        toast.success(result.message);
+      }
       refetch();
     } catch (error) {
-      console.error("Error deleting subscriber:", error);
+      if (error.status === 401 || error.status === 403) {
+        // Session expired or unauthorized
+        router.push(
+          "/login?error=" +
+            encodeURIComponent(
+              "Unauthorized access. Please login with admin credentials."
+            )
+        );
+      } else {
+        console.error("Error deleting subscriber:", error);
+      }
     }
   };
 
