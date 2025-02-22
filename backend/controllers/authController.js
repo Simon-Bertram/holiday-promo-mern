@@ -46,12 +46,6 @@ export const verifyMagicCode = asyncHandler(async (req, res) => {
   console.log("Received verification request:", { email, code });
 
   const user = await User.findOne({ email });
-  console.log("Found user:", {
-    hasUser: !!user,
-    storedCode: user?.loginCode,
-    codeExpiry: user?.loginCodeExpiry,
-    currentTime: Date.now(),
-  });
 
   if (!user) {
     res.status(404);

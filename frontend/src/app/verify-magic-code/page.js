@@ -123,16 +123,6 @@ export default function CodeLoginPage() {
     }
   }
 
-  // Add this useEffect to log initial state
-  useEffect(() => {
-    console.log("Form initialization:", {
-      decodedEmail,
-      rawEmail: email,
-      formValues: form.getValues(),
-      code,
-    });
-  }, [decodedEmail, email, form, code]);
-
   if (!email) return null; // Don't render form if no email
 
   return (

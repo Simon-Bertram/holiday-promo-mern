@@ -66,7 +66,6 @@ export default function PasswordLoginPage() {
 
   async function onSubmit(data) {
     try {
-      console.log("Login payload:", data); // debug
       const res = await login(data).unwrap();
       dispatch(setCredentials({ ...res, token: getCookie("jwt") }));
       router.push(res.redirect || "/dashboard");

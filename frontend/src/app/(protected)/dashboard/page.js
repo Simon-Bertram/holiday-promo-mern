@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -33,7 +34,7 @@ export default function DashboardPage() {
   } = useGetSubscribersQuery();
   const [deleteSubscriber, { isLoading: isDeleting }] =
     useDeleteSubscriberMutation();
-
+  const { toast } = useToast();
   useEffect(() => {
     if (!isLoading && !isAuthorized) {
       router.push(
@@ -64,9 +65,12 @@ export default function DashboardPage() {
 
   const handleDelete = async (subscriberId) => {
     try {
-      const result = await deleteSubscriber(subscriberId).unwrap();
+      const result = await deleteSubscriber({ id: subscriberId }).unwrap();
       if (result.message) {
-        toast.success(result.message);
+        toast({
+          description: result.message,
+          variant: "success",
+        });
       }
       refetch();
     } catch (error) {
@@ -79,6 +83,10 @@ export default function DashboardPage() {
             )
         );
       } else {
+        toast({
+          description: "Error deleting subscriber",
+          variant: "destructive",
+        });
         console.error("Error deleting subscriber:", error);
       }
     }

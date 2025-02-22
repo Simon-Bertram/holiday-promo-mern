@@ -3,7 +3,7 @@ import config from "@/config";
 
 export async function GET(request, { params }) {
   try {
-    const { id } = params;
+    const id = await params.id;
 
     const response = await fetch(`${config.backendUrl}/api/subscribers/${id}`, {
       method: "GET",
@@ -32,7 +32,7 @@ export async function GET(request, { params }) {
 
 export async function PUT(request, { params }) {
   try {
-    const { id } = params;
+    const id = await params.id;
     const body = await request.json();
 
     const response = await fetch(
@@ -66,18 +66,26 @@ export async function PUT(request, { params }) {
 
 export async function DELETE(request, { params }) {
   try {
-    const { id } = params;
+    const id = await params.id;
 
-    const response = await fetch(
-      `${process.env.BACKEND_URL}/api/subscribers/${id}`,
-      {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
+    // save the response to the delete fetch
+    const response = await fetch(`${config.backendUrl}/api/subscribers/${id}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+    });
 
+    // check if the response status is unauthorized
+    if (response.status === 401 || response.status === 403) {
+      return NextResponse.json(
+        { error: "Unauthorized access" },
+        { status: response.status }
+      );
+    }
+
+    // get the data from the response - in json format
     const data = await response.json();
 
     if (!response.ok) {
